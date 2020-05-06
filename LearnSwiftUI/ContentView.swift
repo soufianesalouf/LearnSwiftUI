@@ -9,8 +9,58 @@
 import SwiftUI
 
 struct ContentView: View {
+    
+    // Constants
+    let tipPercentages = [0, 10, 15, 20, 25]
+    
+    // Mutating var
+    @State private var checkAmount = ""
+    @State private var numberOfPeople = 2
+    @State private var tipPercentage = 2
+    
+    var totalPerPerson: Double {
+        let peopleCount = Double(numberOfPeople + 2)
+        let tipSelection = Double(tipPercentages[tipPercentage])
+        let orderAmount = Double(checkAmount) ?? 0
+        
+        let tipValue = orderAmount * tipSelection / 100
+        let totalAmount = orderAmount + tipValue
+        let amountPerPerson = totalAmount / peopleCount
+        
+        return amountPerPerson
+    }
+    
     var body: some View {
-        Text("Hello, World!")
+        NavigationView {
+            Form {
+                Section {
+                    
+                    // Text Field binded with property check amount
+                    TextField("Amount", text: $checkAmount)
+                        .keyboardType(.decimalPad)
+                    
+                    Picker("Number of people", selection: $numberOfPeople) {
+                        ForEach(2 ..< 100) {
+                            Text("\($0) people")
+                        }
+                    }
+                }
+                
+                Section(header: Text("How much tip do you want to leave?")) {
+                    Picker("Tip percentage", selection: $tipPercentage) {
+                        ForEach(0 ..< tipPercentages.count) {
+                            Text("\(self.tipPercentages[$0])%")
+                        }
+                    }
+                    .pickerStyle(SegmentedPickerStyle())
+                }
+                
+                Section {
+                    Text("$\(totalPerPerson , specifier: "%.2f")")
+                }
+            }
+            .navigationBarTitle("WeSplit")
+        }
     }
 }
 
